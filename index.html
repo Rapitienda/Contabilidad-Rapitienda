@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rapitienda Campo Alegre</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d2354">
+    <link rel="apple-touch-icon" href="logo.jpg">
+</head>
+<body>
+
+    <div id="login-screen" class="screen active-flex">
+        <div class="login-container">
+            <div class="logo-circle">
+                <img src="logo.jpg" alt="Rapitienda Logo" onerror="this.src='https://via.placeholder.com/100?text=Logo'">
+            </div>
+            <h2>Rapitienda</h2>
+            <p>Campo Alegre</p>
+            <div class="input-ios">
+                <span>🔒</span>
+                <input type="password" id="login-pass" placeholder="Contraseña">
+            </div>
+            <button class="btn-primary" onclick="window.checkLogin()">Ingresar</button>
+        </div>
+    </div>
+
+    <div id="main-app" class="screen">
+        
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-text">
+                    <small>Bienvenido,</small>
+                    <h3 id="header-username">Usuario</h3>
+                </div>
+            </div>
+            <button class="logout-icon-btn" onclick="window.logout()" title="Cerrar Sesión">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+                    <line x1="12" y1="2" x2="12" y2="12"></line>
+                </svg>
+            </button>
+        </header>
+
+        <main class="content-area">
+            
+            <section id="mod-inicio" class="module active-module">
+                <div class="balance-card">
+                    <p>Balance del Día <span id="sync-status" style="font-size:0.7rem; color:#a8e063;">(Sincronizado ☁️)</span></p>
+                    <h1 id="stats-balance-hoy">$ 0</h1>
+                    <div class="balance-row">
+                        <span>🟢 Ingresos</span>
+                        <span>🔴 Gastos</span>
+                    </div>
+                </div>
+
+                <div class="grid-stats">
+                    <div class="stat-box blue">
+                        <span class="icon">🛒</span>
+                        <div class="info"><small>Ventas Mes</small><h3 id="stats-ventas-mes">$ 0</h3></div>
+                    </div>
+                    <div class="stat-box red">
+                        <span class="icon">💸</span>
+                        <div class="info"><small>Gastos Mes</small><h3 id="stats-gastos-mes">$ 0</h3></div>
+                    </div>
+                    <div class="stat-box light-green full-width">
+                        <span class="icon">⚖️</span>
+                        <div class="info"><small>Balance Total (Mes)</small><h3 id="stats-balance-total">$ 0</h3></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="mod-caja" class="module">
+                <div class="form-card">
+                    <h3 id="caja-titulo">Nuevo Cierre</h3>
+                    <input type="hidden" id="caja-id-edit">
+                    
+                    <div class="input-group">
+                        <label>📅 Fecha del Cierre</label>
+                        <div class="input-ios"><input type="date" id="caja-fecha" class="clean-date"></div>
+                    </div>
+                    
+                    <label>💰 Ingresos</label>
+                    <div class="money-inputs">
+                        <div class="input-ios"><span>💵</span><input type="number" id="caja-efectivo" placeholder="Efectivo"></div>
+                        <div class="input-ios"><span>💳</span><input type="number" id="caja-tarjeta" placeholder="Tarjeta"></div>
+                        <div class="input-ios"><span>📱</span><input type="number" id="caja-nequi" placeholder="Nequi"></div>
+                    </div>
+
+                    <div class="gastos-section">
+                        <label>📉 Gastos del día</label>
+                        <div class="input-ios">
+                            <span>📂</span>
+                            <select id="caja-tipo-gasto" class="clean-select">
+                                <option value="">Selecciona Tipo de Gasto</option>
+                                <option value="Alquiler">Alquiler</option>
+                                <option value="Nomina">Nómina</option>
+                                <option value="Servicios">Servicios</option>
+                                <option value="Internet">Internet</option>
+                                <option value="Software Caja">Software Caja</option>
+                                <option value="Pagos Proveedores">Pagos Proveedores</option>
+                                <option value="Pago Factura">Pago Factura</option>
+                                <option value="Otros">Otros</option>
+                            </select>
+                        </div>
+                        <div class="input-ios red-border">
+                            <span>💸</span><input type="number" id="caja-gastos" placeholder="Valor del Gasto ($)">
+                        </div>
+                        <textarea id="caja-obs" placeholder="Observaciones adicionales..."></textarea>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn-primary" id="btn-save-cierre" onclick="window.saveCierre()">Guardar Cierre ✅</button>
+                        <button class="btn-secondary" id="btn-cancel-edit" onclick="window.cancelEdit()" style="display:none; margin-top:10px;">Cancelar Edición ❌</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="mod-historial" class="module">
+                <h3>Historial de Cierres</h3>
+                <div id="lista-historial" class="history-list"></div>
+            </section>
+
+            <section id="mod-reportes" class="module">
+                <div class="form-card">
+                    <h3>Generar Reporte PDF</h3>
+                    <div class="date-container">
+                        <div class="input-ios"><span>📅</span><input type="date" id="rep-desde" class="clean-date"></div>
+                        <div style="text-align:center; margin-bottom:10px;">⬇️ Hasta ⬇️</div>
+                        <div class="input-ios"><span>📅</span><input type="date" id="rep-hasta" class="clean-date"></div>
+                    </div>
+                    <button class="btn-primary" onclick="window.generateReportPDF()">Descargar Reporte 📄</button>
+                </div>
+            </section>
+
+            <section id="mod-usuarios" class="module">
+                <div class="form-card">
+                    <h3 id="user-form-title">Gestionar Personal</h3>
+                    <input type="hidden" id="user-index-edit">
+                    <div class="input-ios"><span>👤</span><input type="text" id="user-name" placeholder="Nombre (ej. Juan)"></div>
+                    <div class="input-ios"><span>🔑</span><input type="text" id="user-pass" placeholder="Contraseña"></div>
+                    <div class="input-ios">
+                        <span>🛡️</span>
+                        <select id="user-role" class="clean-select">
+                            <option value="Admin">Administrador</option>
+                            <option value="Empleado">Empleado</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary small" id="btn-save-user" onclick="window.saveUser()">Crear Usuario</button>
+                    <button class="btn-secondary small" id="btn-cancel-user" onclick="window.cancelUserEdit()" style="display:none; margin-top:10px;">Cancelar</button>
+                </div>
+
+                <div class="form-card backup-container">
+                    <h3>💾 Copia de Seguridad</h3>
+                    <p style="font-size:0.9rem; color:#666;">Exporta o importa tus datos manualmente.</p>
+                    <div class="backup-buttons">
+                        <button class="btn-backup export" onclick="window.exportBackup()">⬇️ Exportar</button>
+                        <button class="btn-backup import" onclick="document.getElementById('backup-input').click()">⬆️ Importar</button>
+                        <input type="file" id="backup-input" accept=".json" style="display:none" onchange="window.importBackup(this)">
+                    </div>
+                </div>
+                
+                <h3>Lista de Usuarios</h3>
+                <div id="user-list" class="user-list-container"></div>
+            </section>
+
+        </main>
+
+        <nav class="bottom-nav">
+            <button onclick="window.nav('inicio')" class="nav-item active-nav" id="btn-inicio"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></button>
+            <button onclick="window.nav('caja')" class="nav-item" id="btn-caja"><span class="nav-icon">💰</span><span class="nav-label">Caja</span></button>
+            <button onclick="window.nav('historial')" class="nav-item" id="btn-historial"><span class="nav-icon">📅</span><span class="nav-label">Historial</span></button>
+            <button onclick="window.nav('reportes')" class="nav-item" id="btn-reportes"><span class="nav-icon">📊</span><span class="nav-label">Reportes</span></button>
+            <button onclick="window.nav('usuarios')" class="nav-item" id="btn-usuarios"><span class="nav-icon">👤</span><span class="nav-label">Usuarios</span></button>
+        </nav>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    
+    <script type="module" src="script.js"></script>
+    
+    <script>
+        if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
+            navigator.serviceWorker.register('./service-worker.js').catch(e => console.log(e));
+        }
+    </script>
+</body>
+</html>
